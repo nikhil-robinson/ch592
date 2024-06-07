@@ -267,6 +267,7 @@ extern "C" {
 #define  RB_CLK_PLL_DIV     0x1F                      // RWA, output clock divider from PLL or CK32M
 #define  RB_CLK_SYS_MOD     0xC0                      // RWA, system clock source mode: 00=divided from 32MHz, 01=divided from PLL-480MHz, 10=directly from 32MHz, 11=directly from 32KHz
 #define  RB_TX_32M_PWR_EN   0x40000                   // RWA, extern 32MHz HSE power contorl
+#define  RB_XT_32M_PWR_EN   0x40000                   // RWA, extern 32MHz HSE power contorl
 #define  RB_XT_FORCE_EN     0x80000                   // RWA, system clock control in Halt mode
 #define  RB_PLL_PWR_EN      0x100000                  // RWA, PLL power control
 
@@ -333,6 +334,7 @@ extern "C" {
 #define  RB_PIN_PWMX        0x400                     // RW, PWM4/PWM5/PWM7/PWM8/PWM9 alternate pin enable: 0=PWM4/5/7/8/9 on PA[12]/PA[13]/PB[4]/PB[6]/PB[7], 1=PWM4/5/7/8/9 on PA[6]/PA[7]/PB[1]/PB[2]/P[3]
 #define  RB_PIN_I2C         0x800                     // RW, SCL/SDA alternate pin enable: 0=SCL/SDA on PB[13]/PB[12], 1=SCL_/SDA_ on PB[21]/PB[20]
 #define  RB_PIN_MODEM       0x1000                    // RW, DSR/DTR alternate pin enable: 0=DSR/DTR on PB[1]/PB[5], 1=DSR_/DTR_ on PB[14]/PB[15]
+#define  RB_DEBUG_EN        0x2000                    // RW, Debug interface disable control bit: 0=enable debug, 1=disable debug
 #define  RB_RF_ANT_SW_EN    0x8000                    // RW, RF antenna switch control output enable: 0=disable output, 1=output on PB[16]/PB[17]/PB[18]/PB[19]/PB[20]/PB[21]
 #define R16_PIN_ANALOG_IE   (*((PUINT16V)0x4000101A)) // RW, analog pin enable and digital input disable
 #define  RB_PIN_USB_DP_PU   0x40                      // RW, USB UDP internal pullup resistance enable: 0=enable/disable by RB_UC_DEV_PU_EN, 1=enable pullup, replace RB_UC_DEV_PU_EN under sleep mode
@@ -482,9 +484,9 @@ extern "C" {
 #define  RB_TKEY_CURRENT    0x02                      // RW, Touchkey charge current selection: 0=35uA, 1=70uA
 #define  RB_TKEY_DRV_EN     0x04                      // RW, Touchkey drive shield enable
 #define  RB_TKEY_PGA_ADJ    0x08                      // RW, ADC input PGA speed selection: 0=slow, 1=fast
-#define  RB_TKEY_DMA_EN     0x10                      // RW, Touchkey DMA enable
+#define  RB_TKEY_RAND_EN    0x10                      // RW, Touchkey random trigger enable
 #define  RB_TKEY_AUTO_EN    0x20                      // RW, Touchkey auto-trigger enable
-#define  RB_TKEY_RAND_EN    0x40                      // RW, Touchkey random trigger enable
+#define  RB_TKEY_DMA_EN     0x40                      // RW, Touchkey DMA enable
 #define R32_ADC_DMA_CTRL    (*((PUINT32V)0x40001060)) // RW, ADC DMA control
 #define R8_ADC_CTRL_DMA     (*((PUINT8V)0x40001061))  // RW, ADC DMA control
 #define  RB_ADC_DMA_ENABLE  0x01                      // RW, ADC DMA enable
@@ -503,6 +505,8 @@ extern "C" {
 #define R16_ADC_DMA_BEG     (*((PUINT16V)0x40001068)) // RW, ADC DMA begin address
 #define R32_ADC_DMA_END     (*((PUINT32V)0x4000106C)) // RW, ADC DMA end address
 #define R16_ADC_DMA_END     (*((PUINT16V)0x4000106C)) // RW, ADC DMA end address
+#define R32_ADC_SCAN_CFG1   (*((PUINT32V)0x40001070)) // RW, ADC scan config 1
+#define R32_ADC_SCAN_CFG2   (*((PUINT32V)0x40001074)) // RW, ADC scan config 2
 
 /* System: Flash ROM control register */
 #define R32_FLASH_DATA      (*((PUINT32V)0x40001800)) // RO/WO, flash ROM data
@@ -1124,11 +1128,15 @@ extern "C" {
 #define R8_PWM_CONFIG       (*((PUINT8V)0x40005002))  // RW, PWM configuration
 #define R8_PWM_CLOCK_DIV    (*((PUINT8V)0x40005003))  // RW, PWM clock divisor
 #define R32_PWM4_7_DATA     (*((PUINT32V)0x40005004)) // RW, PWM4-7 data holding
+#define R16_PWM4_DATA       (*((PUINT16V)0x40005004)) // RW, PWM4 16bit data holding
+#define R16_PWM5_DATA       (*((PUINT16V)0x40005006)) // RW, PWM5 16bit data holding
 #define R8_PWM4_DATA        (*((PUINT8V)0x40005004))  // RW, PWM4 data holding
 #define R8_PWM5_DATA        (*((PUINT8V)0x40005005))  // RW, PWM5 data holding
 #define R8_PWM6_DATA        (*((PUINT8V)0x40005006))  // RW, PWM6 data holding
 #define R8_PWM7_DATA        (*((PUINT8V)0x40005007))  // RW, PWM7 data holding
 #define R32_PWM8_11_DATA    (*((PUINT32V)0x40005008)) // RW, PWM8-11 data holding
+#define R16_PWM6_DATA       (*((PUINT16V)0x40005008)) // RW, PWM6 16bit data holding
+#define R16_PWM7_DATA       (*((PUINT16V)0x4000500A)) // RW, PWM7 16bit data holding
 #define R8_PWM8_DATA        (*((PUINT8V)0x40005008))  // RW, PWM8 data holding
 #define R8_PWM9_DATA        (*((PUINT8V)0x40005009))  // RW, PWM9 data holding
 #define R8_PWM10_DATA       (*((PUINT8V)0x4000500A))  // RW, PWM10 data holding
@@ -1138,6 +1146,8 @@ extern "C" {
 #define  RB_PWM_CYC_PRE     0x02                      // RW, select PWM cycle interrupt point: 0=after count 0xFE (0x7E for 7 bits mode...), 1=after count 0xF0 (0x70 for 7 bits mode...)
 #define  RB_PWM_IF_CYC      0x80                      // RW1, interrupt flag for PWM cycle end
 #define R32_PWM_REG_DATA8   (*((PUINT32V)0x40005010)) // RW, PWM8-9 data register
+#define R16_PWM8_DATA       (*((PUINT16V)0x40005010)) // RW, PWM8 16bit data holding
+#define R16_PWM9_DATA       (*((PUINT16V)0x40005012)) // RW, PWM9 16bit data holding
 #define R32_PWM_REG_CYCLE   (*((PUINT32V)0x40005014)) // RW, PWM cycle value
 
 /* PWM4/5/6/7/8/9/10/11 register address offset and bit define */
@@ -1185,7 +1195,7 @@ extern "C" {
 #define  RB_LCD_BIAS        0x04                      // RW, LCD bias select:  0=1/2 bias,  1=1/3 bias
 #define  RB_LCD_DUTY        0x18                      // RW, LCD duty select:  00=1/2 duty,  01=1/3 duty,  10=1/4 duty
 #define  RB_LCD_SCAN_CLK    0x60                      // RW, LCD scan clock select: 00=256Hz, 01=512Hz, 10=1KHz, 11=128Hz
-#define  RB_LCD_VLCD_SEL    0x80                      // RW, LCD drive voltageÔºö0=VIO33*100%(3.3V),1=VIO33*76%(2.5V)
+#define  RB_LCD_VLCD_SEL    0x80                      // RW, LCD drive voltage£∫0=VIO33*100%(3.3V),1=VIO33*76%(2.5V)
 #define  RB_LCD_SEG0_7_EN   0xFF00                    // RW, SEG0-SEG7 enable
 #define  RB_LCD_SEG8_15_EN  0xFF0000                  // RW, SEG8-SEG15 enable
 #define  RB_LCD_SEG16_19_EN 0xF000000                 // RW, SEG16-SEG19 enable
@@ -1349,7 +1359,6 @@ extern "C" {
 #define  RB_UH_PORT_EN      0x01      // enable USB port: 0=disable, 1=enable port, automatic disabled if USB device detached
 
 #define R8_USB_INT_EN       (*((PUINT8V)0x40008002))  // USB interrupt enable
-#define  RB_UIE_DEV_SOF     0x80      // enable interrupt for SOF received for USB device mode
 #define  RB_UIE_DEV_NAK     0x40      // enable interrupt for NAK responded for USB device mode
 #define  RB_MOD_1_WIRE      0x20      // enable single wire mode
 #define  RB_UIE_FIFO_OV     0x10      // enable interrupt for FIFO overflow
@@ -1392,12 +1401,10 @@ extern "C" {
 #define  RB_UIS_TOKEN0      0x10      // RO, current token PID code bit 0 received for USB device mode
 #define  MASK_UIS_TOKEN     0x30      // RO, bit mask of current token PID code received for USB device mode
 #define  UIS_TOKEN_OUT      0x00
-#define  UIS_TOKEN_SOF      0x10
 #define  UIS_TOKEN_IN       0x20
 #define  UIS_TOKEN_SETUP    0x30
 // bUIS_TOKEN1 & bUIS_TOKEN0: current token PID code received for USB device mode, keep last status during SETUP token, clear RB_UIF_TRANSFER ( RB_UIF_TRANSFER from 1 to 0 ) to set free
 //   00: OUT token PID received
-//   01: SOF token PID received
 //   10: IN token PID received
 //   11: free
 #define  MASK_UIS_ENDP      0x0F      // RO, bit mask of current transfer endpoint number for USB device mode
@@ -1707,7 +1714,7 @@ extern "C" {
 #endif
 
 #ifndef USB_DEVICE_ADDR
-#define USB_DEVICE_ADDR         0x02    /* ÈªòËÆ§ÁöÑUSBËÆæÂ§áÂú∞ÂùÄ */
+#define USB_DEVICE_ADDR         0x02    /* ƒ¨»œµƒUSB…Ë±∏µÿ÷∑ */
 #endif
 #ifndef DEFAULT_ENDP0_SIZE
 #define DEFAULT_ENDP0_SIZE      8       /* default maximum packet size for endpoint 0 */
@@ -1716,12 +1723,12 @@ extern "C" {
 #define MAX_PACKET_SIZE         64      /* maximum packet size */
 #endif
 #ifndef USB_BO_CBW_SIZE
-#define USB_BO_CBW_SIZE         0x1F    /* ÂëΩ‰ª§ÂùóCBWÁöÑÊÄªÈïøÂ∫¶ */
-#define USB_BO_CSW_SIZE         0x0D    /* ÂëΩ‰ª§Áä∂ÊÄÅÂùóCSWÁöÑÊÄªÈïøÂ∫¶ */
+#define USB_BO_CBW_SIZE         0x1F    /* √¸¡ÓøÈCBWµƒ◊‹≥§∂» */
+#define USB_BO_CSW_SIZE         0x0D    /* √¸¡Ó◊¥Ã¨øÈCSWµƒ◊‹≥§∂» */
 #endif
 #ifndef USB_BO_CBW_SIG
-#define USB_BO_CBW_SIG          0x43425355    /* ÂëΩ‰ª§ÂùóCBWËØÜÂà´Ê†áÂøó'USBC' */
-#define USB_BO_CSW_SIG          0x53425355    /* ÂëΩ‰ª§Áä∂ÊÄÅÂùóCSWËØÜÂà´Ê†áÂøó'USBS' */
+#define USB_BO_CBW_SIG          0x43425355    /* √¸¡ÓøÈCBW ∂±±Í÷æ'USBC' */
+#define USB_BO_CSW_SIG          0x53425355    /* √¸¡Ó◊¥Ã¨øÈCSW ∂±±Í÷æ'USBS' */
 #endif
 
 #ifndef __PACKED

@@ -15,7 +15,7 @@
 /*********************************************************************
  * @fn      PWMX_CycleCfg
  *
- * @brief   PWM4-PWM11Âü∫ÂáÜÊó∂ÈíüÈÖçÁΩÆ
+ * @brief   PWM4-PWM11÷‹∆⁄≈‰÷√
  *
  * @param   cyc     - refer to PWMX_CycleTypeDef
  *
@@ -49,23 +49,71 @@ void PWMX_CycleCfg(PWMX_CycleTypeDef cyc)
             R8_PWM_CONFIG = (R8_PWM_CONFIG & 0xf0) | (2 << 2) | 0x01;
             break;
 
-        case PWMX_Cycle_32:
-            R8_PWM_CONFIG = (R8_PWM_CONFIG & 0xf0) | (3 << 2);
-            break;
-
-        case PWMX_Cycle_31:
-            R8_PWM_CONFIG = (R8_PWM_CONFIG & 0xf0) | (3 << 2) | 0x01;
-            break;
-
         default:
             break;
     }
 }
 
 /*********************************************************************
+ * @fn      PWMX_16bit_CycleCfg
+ *
+ * @brief   PWM4-PWM9 16Œª÷‹∆⁄≈‰÷√
+ *
+ * @param   cyc     - 16Œª÷‹∆⁄
+ *
+ * @return  none
+ */
+void PWMX_16bit_CycleCfg(uint16_t cyc)
+{
+    R8_PWM_CONFIG = (R8_PWM_CONFIG & 0xf0) | (3 << 2);
+    R32_PWM_REG_CYCLE = cyc;
+}
+
+/*********************************************************************
+ * @fn      PWMX_16bit_ACTOUT
+ *
+ * @brief   PWM4-PWM9 Õ®µ¿16Œª ‰≥ˆ≤®–Œ≈‰÷√
+ *
+ * @param   ch      - select channel of pwm, refer to channel of PWM define
+ * @param   da      - effective pulse width
+ * @param   pr      - select wave polar, refer to PWMX_PolarTypeDef
+ * @param   s       - control pwmx function, ENABLE or DISABLE
+ *
+ * @return  none
+ */
+void PWMX_16bit_ACTOUT(uint8_t ch, uint16_t da, PWMX_PolarTypeDef pr, FunctionalState s)
+{
+    uint8_t i;
+
+    if(s == DISABLE)
+    {
+        R8_PWM_OUT_EN &= ~(ch);
+    }
+    else
+    {
+        (pr) ? (R8_PWM_POLAR |= (ch)) : (R8_PWM_POLAR &= ~(ch));
+        for(i = 0; i < 6; i++)
+        {
+            if((ch >> i) & 1)
+            {
+                if(i<4)
+                {
+                    *((volatile uint16_t *)((&R16_PWM4_DATA) + i)) = da;
+                }
+                else
+                {
+                    *((volatile uint16_t *)((&R16_PWM8_DATA) + (i-4))) = da;
+                }
+            }
+        }
+        R8_PWM_OUT_EN |= (ch);
+    }
+}
+
+/*********************************************************************
  * @fn      PWMX_ACTOUT
  *
- * @brief   PWM4-PWM11ÈÄöÈÅìËæìÂá∫Ê≥¢ÂΩ¢ÈÖçÁΩÆ
+ * @brief   PWM4-PWM11Õ®µ¿ ‰≥ˆ≤®–Œ≈‰÷√
  *
  * @param   ch      - select channel of pwm, refer to channel of PWM define
  * @param   da      - effective pulse width
@@ -99,13 +147,13 @@ void PWMX_ACTOUT(uint8_t ch, uint8_t da, PWMX_PolarTypeDef pr, FunctionalState s
 /*********************************************************************
  * @fn      PWMX_AlterOutCfg
  *
- * @brief   PWM ‰∫§ÊõøËæìÂá∫Ê®°ÂºèÈÖçÁΩÆ
+ * @brief   PWM ΩªÃÊ ‰≥ˆƒ£ Ω≈‰÷√
  *
  * @param   ch      - select group of PWM alternate output
- *                    RB_PWM4_5_STAG_EN     -  PWM4 Âíå PWM5 ÈÄöÈÅì‰∫§ÊõøËæìÂá∫
- *                    RB_PWM6_7_STAG_EN     -  PWM6 Âíå PWM7 ÈÄöÈÅì‰∫§ÊõøËæìÂá∫
- *                    RB_PWM8_9_STAG_EN     -  PWM8 Âíå PWM9 ÈÄöÈÅì‰∫§ÊõøËæìÂá∫
- *                    RB_PWM10_11_STAG_EN   -  PWM10 Âíå PWM11 ÈÄöÈÅì‰∫§ÊõøËæìÂá∫
+ *                    RB_PWM4_5_STAG_EN     -  PWM4 ∫Õ PWM5 Õ®µ¿ΩªÃÊ ‰≥ˆ
+ *                    RB_PWM6_7_STAG_EN     -  PWM6 ∫Õ PWM7 Õ®µ¿ΩªÃÊ ‰≥ˆ
+ *                    RB_PWM8_9_STAG_EN     -  PWM8 ∫Õ PWM9 Õ®µ¿ΩªÃÊ ‰≥ˆ
+ *                    RB_PWM10_11_STAG_EN   -  PWM10 ∫Õ PWM11 Õ®µ¿ΩªÃÊ ‰≥ˆ
  * @param   s       - control pwmx function, ENABLE or DISABLE
  *
  * @return  none

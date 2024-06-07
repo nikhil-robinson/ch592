@@ -15,14 +15,15 @@
 
 /*******************************************************************************
 * Function Name  : LCD_DefInit
-* Description    : LCDæ®µå¼å±é©±åŠ¨åˆå§‹åŒ–é…ç½®
-* Input          : duty å ç©ºæ¯”
-*                  bias åå‹æ¯”
+* Description    : LCD¶ÎÊ½ÆÁÇı¶¯³õÊ¼»¯ÅäÖÃ
+* Input          : duty Õ¼¿Õ±È
+*                  bias Æ«Ñ¹±È
 * Return         : None
 *******************************************************************************/
 void LCD_Init(LCDDutyTypeDef duty, LCDBiasTypeDef bias)
 {
-    R32_PIN_CONFIG2 = 0xfffeff3f; // å…³é—­æ•°å­—è¾“å…¥
+    R32_PIN_CONFIG2 = 0xfffeff3f; // ¹Ø±ÕÊı×ÖÊäÈë
+    R16_PIN_ALTERNATE |= RB_DEBUG_EN; // ²Ù×÷LCDÊ±£¬Ğè¹Ø±Õdebug
     R32_LCD_CMD = 0x1ffff << 8;
     R32_LCD_CMD |= RB_LCD_SYS_EN | RB_LCD_ON |
                    (LCD_CLK_128 << 5)  |
