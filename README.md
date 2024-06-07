@@ -1,6 +1,6 @@
 # CH592
 
-An open source development environment (tooling, headers, examples) for the [CH592](https://www.wch-ic.com/products/CH592.html) Based on [openwch/ch592](https://github.com/openwch/ch592).
+An open source development environment (tooling, headers, examples) for the [CH592](https://www.wch-ic.com/products/CH592.html). All the examples are taken from [openwch/ch592](https://github.com/openwch/ch592)
 
 
 ## Getting Started
