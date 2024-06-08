@@ -2,43 +2,56 @@
 TOOLCHAIN_PREFIX := ~/.local/xPacks/riscv-none-elf-gcc/xpack-riscv-none-elf-gcc-13.2.0-2/bin/riscv-none-elf
 
 APP_C_SRCS += \
-  ./src/main.c
+  ./src/main.c\
+  ./src/broadcaster.c\
+  ./src/devinfoservice.c
 
-
+SDK_BLE_HAL_C_SRCS := \
+  ../../sdk/BLE/HAL/MCU.c \
+  ../../sdk/BLE/HAL/RTC.c \
+  ../../sdk/BLE/HAL/SLEEP.c
 
 SDK_STDPERIPHDRIVER_C_SRCS += \
+  ../../sdk/StdPeriphDriver/CH59x_adc.c \
+  ../../sdk/StdPeriphDriver/CH59x_clk.c \
   ../../sdk/StdPeriphDriver/CH59x_gpio.c \
-  ../../sdk/StdPeriphDriver/CH59x_spi0.c \
+  ../../sdk/StdPeriphDriver/CH59x_pwr.c \
   ../../sdk/StdPeriphDriver/CH59x_sys.c \
   ../../sdk/StdPeriphDriver/CH59x_uart1.c \
+
 
 SDK_RVMSIS_C_SRCS += \
   ../../sdk/RVMSIS/core_riscv.c
 
-
-
+SDK_BLE_LIB_S_UPPER_SRCS += \
+  ../../sdk/BLE/LIB/ble_task_scheduler.S
 SDK_STARTUP_S_UPPER_SRCS += \
   ../../sdk/Startup/startup_CH592.S
 
 C_SRCS := \
   $(APP_C_SRCS) \
+  $(SDK_BLE_HAL_C_SRCS) \
   $(SDK_STDPERIPHDRIVER_C_SRCS) \
   $(SDK_RVMSIS_C_SRCS)
 
 S_UPPER_SRCS := \
+  $(SDK_BLE_LIB_S_UPPER_SRCS) \
   $(SDK_STARTUP_S_UPPER_SRCS)
 
 OBJS := \
   $(patsubst ./src/%.c,obj/src/%.o,$(APP_C_SRCS)) \
+  $(patsubst ../../sdk/%.c,obj/sdk/%.o,$(SDK_BLE_HAL_C_SRCS)) \
   $(patsubst ../../sdk/%.c,obj/sdk/%.o,$(SDK_STDPERIPHDRIVER_C_SRCS)) \
   $(patsubst ../../sdk/%.c,obj/sdk/%.o,$(SDK_RVMSIS_C_SRCS)) \
+  $(patsubst ../../sdk/%.S,obj/sdk/%.o,$(SDK_BLE_LIB_S_UPPER_SRCS)) \
   $(patsubst ../../sdk/%.S,obj/sdk/%.o,$(SDK_STARTUP_S_UPPER_SRCS))
 
 MAKEFILE_DEPS := \
   $(foreach obj,$(OBJS),$(patsubst %.o,%.d,$(obj)))
 
 STDPERIPHDRIVER_LIBS := -L"../../sdk/StdPeriphDriver" -lISP592
-LIBS := $(STDPERIPHDRIVER_LIBS)
+BLE_LIB_LIBS := -L"../../sdk/BLE/LIB" -lCH59xBLE
+LIBS := $(STDPERIPHDRIVER_LIBS) $(BLE_LIB_LIBS)
 
 SECONDARY_FLASH := main.hex
 SECONDARY_LIST := main.lst
@@ -116,6 +129,8 @@ obj/src/%.o: ./src/%.c
 	    -I"src/include" \
 	    -I"../../sdk/StdPeriphDriver/inc" \
 	    -I"../../sdk/RVMSIS" \
+	    -I"../../sdk/BLE/LIB" \
+	    -I"../../sdk/BLE/HAL/include" \
 	    -std=gnu99 \
 	    -MMD \
 	    -MP \
@@ -132,6 +147,8 @@ obj/sdk/%.o: ../../sdk/%.c
 	    -I"src/include" \
 	    -I"../../sdk/StdPeriphDriver/inc" \
 	    -I"../../sdk/RVMSIS" \
+	    -I"../../sdk/BLE/LIB" \
+	    -I"../../sdk/BLE/HAL/include" \
 	    -std=gnu99 \
 	    -MMD \
 	    -MP \

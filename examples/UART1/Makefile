@@ -1,6 +1,4 @@
-# Prefix for older riscv gcc is  risv-none-embed
-# Prefix for newer riscv gcc is  risv-none-elf
-# TOOLCHAIN_PREFIX := riscv-none-embed
+
 TOOLCHAIN_PREFIX := ~/.local/xPacks/riscv-none-elf-gcc/xpack-riscv-none-elf-gcc-13.2.0-2/bin/riscv-none-elf
 
 APP_C_SRCS += \
