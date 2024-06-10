@@ -1,13 +1,13 @@
 
 TOOLCHAIN_PREFIX := ~/.local/xPacks/riscv-none-elf-gcc/xpack-riscv-none-elf-gcc-13.2.0-2/bin/riscv-none-elf
 
-SDK_PATH := ../../sdk
+SDK_PATH := ../../../sdk
+
 
 APP_C_SRCS += \
-  ./src/main.c \
-  ./src/devinfoservice.c \
-  ./src/gattprofile.c \
-  ./src/peripheral.c \
+  ./src/main.c\
+  ./src/broadcaster.c\
+  ./src/devinfoservice.c
 
 SDK_BLE_HAL_C_SRCS := \
   $(SDK_PATH)/BLE/HAL/MCU.c \
@@ -18,6 +18,7 @@ SDK_STDPERIPHDRIVER_C_SRCS += \
   $(SDK_PATH)/StdPeriphDriver/CH59x_adc.c \
   $(SDK_PATH)/StdPeriphDriver/CH59x_clk.c \
   $(SDK_PATH)/StdPeriphDriver/CH59x_gpio.c \
+  $(SDK_PATH)/StdPeriphDriver/CH59x_pwr.c \
   $(SDK_PATH)/StdPeriphDriver/CH59x_sys.c \
   $(SDK_PATH)/StdPeriphDriver/CH59x_uart1.c \
 

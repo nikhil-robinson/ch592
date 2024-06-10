@@ -1,7 +1,7 @@
 
 TOOLCHAIN_PREFIX := ~/.local/xPacks/riscv-none-elf-gcc/xpack-riscv-none-elf-gcc-13.2.0-2/bin/riscv-none-elf
 
-SDK_PATH := ../../sdk
+SDK_PATH := ../../../sdk
 
 
 APP_C_SRCS += \
