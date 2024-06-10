@@ -1,25 +1,27 @@
 
 TOOLCHAIN_PREFIX := ~/.local/xPacks/riscv-none-elf-gcc/xpack-riscv-none-elf-gcc-13.2.0-2/bin/riscv-none-elf
 
+SDK_PATH := ../../sdk
+
 APP_C_SRCS += \
   ./src/main.c
 
 
 
 SDK_STDPERIPHDRIVER_C_SRCS += \
-  ../../sdk/StdPeriphDriver/CH59x_clk.c \
-  ../../sdk/StdPeriphDriver/CH59x_gpio.c \
-  ../../sdk/StdPeriphDriver/CH59x_pwr.c \
-  ../../sdk/StdPeriphDriver/CH59x_sys.c \
-  ../../sdk/StdPeriphDriver/CH59x_uart1.c \
+  $(SDK_PATH)/StdPeriphDriver/CH59x_clk.c \
+  $(SDK_PATH)/StdPeriphDriver/CH59x_gpio.c \
+  $(SDK_PATH)/StdPeriphDriver/CH59x_pwr.c \
+  $(SDK_PATH)/StdPeriphDriver/CH59x_sys.c \
+  $(SDK_PATH)/StdPeriphDriver/CH59x_uart1.c \
 
 SDK_RVMSIS_C_SRCS += \
-  ../../sdk/RVMSIS/core_riscv.c
+  $(SDK_PATH)/RVMSIS/core_riscv.c
 
 
 
 SDK_STARTUP_S_UPPER_SRCS += \
-  ../../sdk/Startup/startup_CH592.S
+  $(SDK_PATH)/Startup/startup_CH592.S
 
 C_SRCS := \
   $(APP_C_SRCS) \
@@ -31,14 +33,14 @@ S_UPPER_SRCS := \
 
 OBJS := \
   $(patsubst ./src/%.c,obj/src/%.o,$(APP_C_SRCS)) \
-  $(patsubst ../../sdk/%.c,obj/sdk/%.o,$(SDK_STDPERIPHDRIVER_C_SRCS)) \
-  $(patsubst ../../sdk/%.c,obj/sdk/%.o,$(SDK_RVMSIS_C_SRCS)) \
-  $(patsubst ../../sdk/%.S,obj/sdk/%.o,$(SDK_STARTUP_S_UPPER_SRCS))
+  $(patsubst $(SDK_PATH)/%.c,obj/sdk/%.o,$(SDK_STDPERIPHDRIVER_C_SRCS)) \
+  $(patsubst $(SDK_PATH)/%.c,obj/sdk/%.o,$(SDK_RVMSIS_C_SRCS)) \
+  $(patsubst $(SDK_PATH)/%.S,obj/sdk/%.o,$(SDK_STARTUP_S_UPPER_SRCS))
 
 MAKEFILE_DEPS := \
   $(foreach obj,$(OBJS),$(patsubst %.o,%.d,$(obj)))
 
-STDPERIPHDRIVER_LIBS := -L"../../sdk/StdPeriphDriver" -lISP592
+STDPERIPHDRIVER_LIBS := -L"$(SDK_PATH)/StdPeriphDriver" -lISP592
 LIBS := $(STDPERIPHDRIVER_LIBS)
 
 SECONDARY_FLASH := main.hex
@@ -81,7 +83,7 @@ secondary-outputs: $(SECONDARY_FLASH) $(SECONDARY_LIST) $(SECONDARY_SIZE)
 main.elf: $(OBJS)
 	${TOOLCHAIN_PREFIX}-gcc \
 	    $(CFLAGS_COMMON) \
-	    -T "../../sdk/Ld/Link.ld" \
+	    -T "$(SDK_PATH)/Ld/Link.ld" \
 	    -nostartfiles \
 	    -Xlinker \
 	    --gc-sections \
@@ -115,8 +117,8 @@ obj/src/%.o: ./src/%.c
 	    $(CFLAGS_COMMON) \
 	    -DDEBUG=1 \
 	    -I"src/include" \
-	    -I"../../sdk/StdPeriphDriver/inc" \
-	    -I"../../sdk/RVMSIS" \
+	    -I"$(SDK_PATH)/StdPeriphDriver/inc" \
+	    -I"$(SDK_PATH)/RVMSIS" \
 	    -std=gnu99 \
 	    -MMD \
 	    -MP \
@@ -125,14 +127,14 @@ obj/src/%.o: ./src/%.c
 	    -c \
 	    -o "$@" "$<"
 
-obj/sdk/%.o: ../../sdk/%.c
+obj/sdk/%.o: $(SDK_PATH)/%.c
 	@ mkdir --parents $(dir $@)
 	@ ${TOOLCHAIN_PREFIX}-gcc \
 	    $(CFLAGS_COMMON) \
 	    -DDEBUG=1 \
 	    -I"src/include" \
-	    -I"../../sdk/StdPeriphDriver/inc" \
-	    -I"../../sdk/RVMSIS" \
+	    -I"$(SDK_PATH)/StdPeriphDriver/inc" \
+	    -I"$(SDK_PATH)/RVMSIS" \
 	    -std=gnu99 \
 	    -MMD \
 	    -MP \
@@ -141,7 +143,7 @@ obj/sdk/%.o: ../../sdk/%.c
 	    -c \
 	    -o "$@" "$<"
 
-obj/sdk/%.o: ../../sdk/%.S
+obj/sdk/%.o: $(SDK_PATH)/%.S
 	@ mkdir --parents $(dir $@)
 	@ ${TOOLCHAIN_PREFIX}-gcc \
 	    $(CFLAGS_COMMON) \
