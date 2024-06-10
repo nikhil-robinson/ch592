@@ -3,12 +3,12 @@
  * Author             : WCH
  * Version            : V1.0
  * Date               : 2023/10/25
- * Description        : WCH Qingke V4C FreeRTOSÒÆÖ²»ã±à½Ó¿Ú
+ * Description        : WCH Qingke V4C FreeRTOSï¿½ï¿½Ö²ï¿½ï¿½ï¿½Ó¿ï¿½
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
  * SPDX-License-Identifier: Apache-2.0
  *******************************************************************************/
 
-#define portCONTEXT_SIZE ( 32 * 4 )
+#define 32 * 4 ( 32 * 4 )
 
 .global xPortStartFirstTask
 .global pxPortInitialiseStack
@@ -22,7 +22,7 @@
 .func
 SW_Handler:
 
-	addi sp, sp, -portCONTEXT_SIZE
+	addi sp, sp, -32 * 4
 	sw x1, 1 * 4( sp )
 	sw x5, 2 * 4( sp )
 	sw x6, 3 * 4( sp )
@@ -102,7 +102,7 @@ SW_Handler:
 
 	lw  x4, 29 * 4( sp )			/* tp - not sure it is useful */
 
-	addi sp, sp, portCONTEXT_SIZE
+	addi sp, sp, 32 * 4
 
 	mret
 	.endfunc
@@ -150,7 +150,7 @@ xPortStartFirstTask:
 	csrrw  x0, mstatus, x5					/* Interrupts enabled from here! */
 	lw  x5, 2 * 4( sp )		/* Initial x5 (t0) value. */
 
-	addi	sp, sp, portCONTEXT_SIZE
+	addi	sp, sp, 32 * 4
 	ret
 	.endfunc
 /*-----------------------------------------------------------*/
