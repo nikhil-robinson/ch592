@@ -7,7 +7,7 @@ An open source development environment (tooling, headers, examples) for the [CH5
 
 ### GCC
 
-These examples uses the customised  [MRS_Toolchain](http://file-oss.mounriver.com/tools/MRS_Toolchain_Linux_x64_V1.91.tar.xz) gcc compiler wihich supports customized hardware stacking function,
+These examples uses the customised  [MRS_Toolchain](http://file-oss.mounriver.com/tools/MRS_Toolchain_Linux_x64_V1.91.tar.xz) gcc compiler which supports customized hardware stacking function,
 
 ```
  __attribute__((interrupt("WCH-Interrupt-fast"))).
