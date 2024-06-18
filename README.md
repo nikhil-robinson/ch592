@@ -7,7 +7,12 @@ An open source development environment (tooling, headers, examples) for the [CH5
 
 ### GCC
 
-These examples uses [xpack-riscv-none-elf-gcc-13.2.0-2](https://github.com/xpack-dev-tools/riscv-none-elf-gcc-xpack) gcc compiler. For more details please read the [Install](https://xpack.github.io/dev-tools/riscv-none-elf-gcc/install/) page.
+These examples uses the customised  [MRS_Toolchain](http://file-oss.mounriver.com/tools/MRS_Toolchain_Linux_x64_V1.91.tar.xz) gcc compiler wihich supports customized hardware stacking function,
+
+```
+ __attribute__((interrupt("WCH-Interrupt-fast"))).
+```
+This statement tells GCC to perform a hardware push operation.
 
 ### Build
 

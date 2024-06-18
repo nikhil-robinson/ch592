@@ -1,5 +1,4 @@
-
-TOOLCHAIN_PREFIX := ~/.local/xPacks/riscv-none-elf-gcc/xpack-riscv-none-elf-gcc-13.2.0-2/bin/riscv-none-elf
+TOOLCHAIN_PREFIX := /opt/gcc-riscv/RISC-V_Embedded_GCC12/bin/riscv-none-elf
 
 SDK_PATH := ../../../sdk
 
@@ -59,8 +58,8 @@ SECONDARY_LIST := main.lst
 SECONDARY_SIZE := main.siz
 
 # ARCH is rv32imac on older gcc, rv32imac_zicsr on newer gcc
-# ARCH := rv32imac
-ARCH := rv32imac_zicsr
+ARCH := rv32imac
+# ARCH := rv32imac_zicsr
 
 CFLAGS_COMMON := \
   -march=$(ARCH) \
