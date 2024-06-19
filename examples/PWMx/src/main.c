@@ -3,33 +3,17 @@
  * Author             : WCH
  * Version            : V1.0
  * Date               : 2020/08/06
- * Description        : ϵͳ˯��ģʽ��������ʾ��GPIOA_5��Ϊ����Դ����4��˯�ߵȼ�
+ * Description 		   : PWM4-11������ʾ
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
  * Attention: This software (modified or not) and binary are used for 
  * microcontroller manufactured by Nanjing Qinheng Microelectronics.
  *******************************************************************************/
 
-/*
- ע�⣺�л���HSEʱ��Դ������ȴ��ȶ�ʱ���ѡ������þ�������йأ�ѡ��һ���µľ�������Ķ������ṩ�ľ��弰��
- ���ص��ݲ���ֵ��ͨ������R8_XT32M_TUNE�Ĵ������������ò�ͬ�ĸ��ص��ݺ�ƫ�õ��������������ȶ�ʱ�䡣
- */
-
 #include "CH59x_common.h"
 
-/*********************************************************************
- * @fn      DebugInit
- *
- * @brief   ���Գ�ʼ��
- *
- * @return  none
- */
-void DebugInit(void)
-{
-    GPIOA_SetBits(GPIO_Pin_9);
-    GPIOA_ModeCfg(GPIO_Pin_9, GPIO_ModeOut_PP_5mA);
-    UART1_DefInit();
-}
+#define  PWM8     1
+#define  PWM16    0
 
 /*********************************************************************
  * @fn      main
@@ -41,78 +25,52 @@ void DebugInit(void)
 int main()
 {
     SetSysClock(CLK_SOURCE_PLL_60MHz);
-    PWR_DCDCCfg(ENABLE);
-    GPIOA_ModeCfg(GPIO_Pin_All, GPIO_ModeIN_PU);
-    GPIOB_ModeCfg(GPIO_Pin_All, GPIO_ModeIN_PU);
 
-    /* ���ô��ڵ��� */
-    DebugInit();
-    PRINT("Start @ChipID=%02x\n", R8_CHIP_ID);
-    DelayMs(200);
+#if PWM8
 
-#if 1
-    /* ���û���ԴΪ GPIO - PA5 */
-    GPIOA_ModeCfg(GPIO_Pin_5, GPIO_ModeIN_PU);
-    GPIOA_ITModeCfg(GPIO_Pin_5, GPIO_ITMode_FallEdge); // �½��ػ���
-    PFIC_EnableIRQ(GPIO_A_IRQn);
-    PWR_PeriphWakeUpCfg(ENABLE, RB_SLP_GPIO_WAKE, Long_Delay);
+    /* ����GPIO */
+    GPIOA_ModeCfg(GPIO_Pin_12, GPIO_ModeOut_PP_5mA); // PA12 - PWM4
+    GPIOA_ModeCfg(GPIO_Pin_13, GPIO_ModeOut_PP_5mA); // PA13 - PWM5
+    GPIOB_ModeCfg(GPIO_Pin_0, GPIO_ModeOut_PP_5mA);  // PB0 - PWM6
+    GPIOB_ModeCfg(GPIO_Pin_4, GPIO_ModeOut_PP_5mA);  // PB4 - PWM7
+    GPIOB_ModeCfg(GPIO_Pin_6, GPIO_ModeOut_PP_5mA);  // PB6 - PWM8
+    GPIOB_ModeCfg(GPIO_Pin_7, GPIO_ModeOut_PP_5mA);  // PB7 - PWM9
+    GPIOB_ModeCfg(GPIO_Pin_14, GPIO_ModeOut_PP_5mA); // PB14 - PWM10
+                                                     //  GPIOB_ModeCfg(GPIO_Pin_23, GPIO_ModeOut_PP_5mA); // PB23 - PWM11 �˽Ÿ���Ϊ�ⲿ��λ�ţ���Ҫ�رմ˹��ܲ��ܿ���PWM����
+
+    PWMX_CLKCfg(4);                                   // cycle = 4/Fsys
+    PWMX_CycleCfg(PWMX_Cycle_64);                     // ���� = 64*cycle
+    PWMX_ACTOUT(CH_PWM4, 64 / 4, Low_Level, ENABLE);  // 25% ռ�ձ�
+    PWMX_ACTOUT(CH_PWM5, 64 / 4, Low_Level, ENABLE);  // 25% ռ�ձ�
+    PWMX_ACTOUT(CH_PWM6, 64 / 4, Low_Level, ENABLE);  // 25% ռ�ձ�
+    PWMX_ACTOUT(CH_PWM7, 64 / 4, Low_Level, ENABLE);  // 25% ռ�ձ�
+    PWMX_ACTOUT(CH_PWM8, 64 / 4, Low_Level, ENABLE);  // 25% ռ�ձ�
+    PWMX_ACTOUT(CH_PWM9, 64 / 4, Low_Level, ENABLE);  // 25% ռ�ձ�
+    PWMX_ACTOUT(CH_PWM10, 64 / 4, Low_Level, ENABLE); // 25% ռ�ձ�
+
 #endif
 
-#if 1
-    PRINT("IDLE mode sleep \n");
-    DelayMs(1);
-    LowPower_Idle();
-    PRINT("wake.. \n");
-    DelayMs(500);
+#if PWM16
+
+    /* ����GPIO */
+    GPIOA_ModeCfg(GPIO_Pin_12, GPIO_ModeOut_PP_5mA); // PA12 - PWM4
+    GPIOA_ModeCfg(GPIO_Pin_13, GPIO_ModeOut_PP_5mA); // PA13 - PWM5
+    GPIOB_ModeCfg(GPIO_Pin_0, GPIO_ModeOut_PP_5mA);  // PB0 - PWM6
+    GPIOB_ModeCfg(GPIO_Pin_4, GPIO_ModeOut_PP_5mA);  // PB4 - PWM7
+    GPIOB_ModeCfg(GPIO_Pin_6, GPIO_ModeOut_PP_5mA);  // PB6 - PWM8
+    GPIOB_ModeCfg(GPIO_Pin_7, GPIO_ModeOut_PP_5mA);  // PB7 - PWM9
+
+    PWMX_CLKCfg(4);                                   // cycle = 4/Fsys
+    PWMX_16bit_CycleCfg(60000);                       // 16 ���ݿ���ʱ��PWMʱ������
+    PWMX_16bit_ACTOUT(CH_PWM4, 30000, Low_Level, ENABLE);  // 50%ռ�ձ�
+    PWMX_16bit_ACTOUT(CH_PWM5, 15000, Low_Level, ENABLE);  // 25%ռ�ձ�
+    PWMX_16bit_ACTOUT(CH_PWM6, 45000, Low_Level, ENABLE);  // 75%ռ�ձ�
+    PWMX_16bit_ACTOUT(CH_PWM7, 30000, High_Level, ENABLE); // 50%ռ�ձ�
+    PWMX_16bit_ACTOUT(CH_PWM8, 15000, High_Level, ENABLE); // 25%ռ�ձ�
+    PWMX_16bit_ACTOUT(CH_PWM9, 45000, High_Level, ENABLE); // 75%ռ�ձ�
+
 #endif
 
-#if 1
-    PRINT("Halt mode sleep \n");
-    DelayMs(2);
-    LowPower_Halt();
-    HSECFG_Current(HSE_RCur_100); // ��Ϊ�����(�͹��ĺ�����������HSEƫ�õ���)
-    DelayMs(2);
-    PRINT("wake.. \n");
-    DelayMs(500);
-#endif
 
-#if 1
-    PRINT("sleep mode sleep \n");
-    DelayMs(2);
-    // ע�⵱��ƵΪ80Mʱ��Sleep˯�߻����жϲ��ɵ���flash�ڴ��롣
-    LowPower_Sleep(RB_PWR_RAM24K | RB_PWR_RAM2K | RB_XT_PRE_EN); //ֻ����24+2K SRAM ����
-    HSECFG_Current(HSE_RCur_100);                 // ��Ϊ�����(�͹��ĺ�����������HSEƫ�õ���)
-    PRINT("wake.. \n");
-    DelayMs(500);
-#endif
-
-#if 1
-    PRINT("shut down mode sleep \n");
-    DelayMs(2);
-    LowPower_Shutdown(0); //ȫ���ϵ磬���Ѻ�λ
-    /*
-     ��ģʽ���Ѻ��ִ�и�λ������������벻�����У�
-     ע��Ҫȷ��ϵͳ˯��ȥ�ٻ��Ѳ��ǻ��Ѹ�λ�������п��ܱ��IDLE�ȼ�����
-     */
-    HSECFG_Current(HSE_RCur_100); // ��Ϊ�����(�͹��ĺ�����������HSEƫ�õ���)
-    PRINT("wake.. \n");
-    DelayMs(500);
-#endif
-
-    while(1)
-        ;
-}
-
-/*********************************************************************
- * @fn      GPIOA_IRQHandler
- *
- * @brief   GPIOA�жϺ���
- *
- * @return  none
- */
-__INTERRUPT
-__HIGH_CODE
-void GPIOA_IRQHandler(void)
-{
-    GPIOA_ClearITFlagBit(GPIO_Pin_6 | GPIO_Pin_5);
+    while(1);
 }
