@@ -3,8 +3,8 @@
  * Author             : WCH
  * Version            : V1.0
  * Date               : 2018/12/10
- * Description        : 外设从机多连接应用程序，初始化广播连接参数，然后广播，连接主机后，
- *                      请求更新连接参数，通过自定义服务传输数据
+ * Description        : 锟斤拷锟斤拷踊锟斤拷锟斤拷锟斤拷锟接︼拷贸锟斤拷颍锟绞硷拷锟斤拷悴ワ拷锟斤拷硬锟斤拷锟斤拷锟饺伙拷锟姐播锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷
+ *                      锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷硬锟斤拷锟斤拷锟酵拷锟斤拷远锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
  * Attention: This software (modified or not) and binary are used for 

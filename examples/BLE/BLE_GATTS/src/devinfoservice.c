@@ -3,7 +3,7 @@
  * Author             : WCH
  * Version            : V1.0
  * Date               : 2018/12/10
- * Description        : 设备信息服务
+ * Description        : 锟借备锟斤拷息锟斤拷锟斤拷
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
  * Attention: This software (modified or not) and binary are used for 
