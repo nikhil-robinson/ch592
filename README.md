@@ -17,7 +17,7 @@ This statement tells GCC to perform a hardware push operation.
 ### Build
 
 ```
-cd examples/blink
+cd examples/GPIO
 make
 make flash
 ```
