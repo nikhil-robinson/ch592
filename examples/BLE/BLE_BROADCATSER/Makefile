@@ -177,7 +177,7 @@ obj/sdk/%.o: $(SDK_PATH)/%.S
 	    -c \
 	    -o "$@" "$<"
 
-f: clean all  
+wchisp: clean all  
 	wchisp flash ./main.elf
 wlink: clean all  
 	wlink flash ./main.bin
