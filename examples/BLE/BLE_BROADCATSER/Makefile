@@ -58,6 +58,7 @@ LIBS := $(STDPERIPHDRIVER_LIBS) $(BLE_LIB_LIBS)
 SECONDARY_FLASH := main.hex
 SECONDARY_LIST := main.lst
 SECONDARY_SIZE := main.siz
+SECONDARY_BIN := main.bin
 
 # ARCH is rv32imac on older gcc, rv32imac_zicsr on newer gcc
 ARCH := rv32imac
@@ -90,7 +91,7 @@ clean:
 	-rm -rf ./obj
 
 .PHONY: secondary-outputs
-secondary-outputs: $(SECONDARY_FLASH) $(SECONDARY_LIST) $(SECONDARY_SIZE)
+secondary-outputs: $(SECONDARY_FLASH) $(SECONDARY_LIST) $(SECONDARY_SIZE) $(SECONDARY_BIN)
 
 main.elf: $(OBJS)
 	${TOOLCHAIN_PREFIX}-gcc \
@@ -112,6 +113,9 @@ main.elf: $(OBJS)
 %.hex: %.elf
 	@ ${TOOLCHAIN_PREFIX}-objcopy -O ihex "$<"  "$@"
 
+%.bin: %.elf
+	$(TOOLCHAIN_PREFIX)-objcopy -O binary $< "$@"
+
 %.lst: %.elf
 	@ ${TOOLCHAIN_PREFIX}-objdump \
 	    --source \
@@ -122,6 +126,8 @@ main.elf: $(OBJS)
 
 %.siz: %.elf
 	@ ${TOOLCHAIN_PREFIX}-size --format=berkeley "$<"
+
+	
 
 obj/src/%.o: ./src/%.c
 	@ mkdir --parents $(dir $@)
@@ -173,6 +179,8 @@ obj/sdk/%.o: $(SDK_PATH)/%.S
 
 f: clean all  
 	wchisp flash ./main.elf
+wlink: clean all  
+	wlink flash ./main.bin
 
 flash: 
 	wchisp flash ./main.elf

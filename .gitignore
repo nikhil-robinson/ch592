@@ -3,3 +3,4 @@ obj/
 *.hex
 *.lst
 *.map
+examples/BLE/BLE_BROADCATSER/main.bin
