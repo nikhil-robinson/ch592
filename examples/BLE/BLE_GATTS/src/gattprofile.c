@@ -616,6 +616,14 @@ static bStatus_t simpleProfile_WriteAttrCB(uint16_t connHandle, gattAttribute_t 
     bStatus_t status = SUCCESS;
     uint8_t   notifyApp = 0xFF;
 
+    printf("offset %d\n",offset);
+    for (size_t i = 0; i < len; i++)
+    {
+        printf("%d ",pValue[i]);
+    }
+    printf("\n");
+    
+
     // If attribute permissions require authorization to write, return error
     if(gattPermitAuthorWrite(pAttr->permissions))
     {
