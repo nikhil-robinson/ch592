@@ -31,8 +31,6 @@ int main()
     GPIOA_ModeCfg(GPIO_Pin_9, GPIO_ModeOut_PP_5mA);
     UART1_DefInit();
     GPIOB_ModeCfg(GPIO_Pin_14 | GPIO_Pin_15, GPIO_ModeIN_PU);
-
-    
     PRINT("IIC Host mode\r\n");
     I2C_Init(I2C_Mode_I2C, 1000000, I2C_DutyCycle_2, I2C_Ack_Enable, I2C_AckAddr_7bit, MASTER_ADDR);
     // ssd1306_I2C_Init();
