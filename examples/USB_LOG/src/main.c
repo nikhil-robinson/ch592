@@ -16,5 +16,6 @@ int main(void){
 	while(1)
   {
     CH_LOGI(TAG,"USB PRINTF TEST %d", count++);
+    DelayMs(1000);
   }
 }
