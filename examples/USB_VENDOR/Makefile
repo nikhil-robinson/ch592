@@ -3,20 +3,15 @@ TOOLCHAIN_PREFIX := /opt/gcc-riscv/RISC-V_Embedded_GCC12/bin/riscv-none-elf
 SDK_PATH := ../../sdk
 
 APP_C_SRCS += \
-  ./src/main.c\
-  ./src/ring_buffer.c\
+  ./src/main.c
 
 
 
 SDK_STDPERIPHDRIVER_C_SRCS += \
   $(SDK_PATH)/StdPeriphDriver/CH59x_gpio.c \
-  $(SDK_PATH)/StdPeriphDriver/CH59x_pwr.c \
   $(SDK_PATH)/StdPeriphDriver/CH59x_sys.c \
-  $(SDK_PATH)/StdPeriphDriver/CH59x_timer0.c \
-  $(SDK_PATH)/StdPeriphDriver/CH59x_timer1.c \
-  $(SDK_PATH)/StdPeriphDriver/CH59x_timer2.c \
-  $(SDK_PATH)/StdPeriphDriver/CH59x_timer3.c \
   $(SDK_PATH)/StdPeriphDriver/CH59x_uart1.c \
+  $(SDK_PATH)/StdPeriphDriver/CH59x_usbdev.c \
 
 SDK_RVMSIS_C_SRCS += \
   $(SDK_PATH)/RVMSIS/core_riscv.c
