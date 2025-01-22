@@ -1,7 +1,14 @@
 #include "CH59x_common.h"
 #include "ring_buffer.h"
+#include "ch_log.h"
 
 #define LSE_32K_CRYSTAL_REMOVED         1
+#define USB_DEBUG 1
+
+#define TAG "NEC-DECODER"
+
+__attribute__((aligned(4))) uint32_t CapBuf[32];
+volatile uint8_t capFlag = 0;
 
 __attribute__((aligned(4))) uint32_t cap_buf[64];
 struct ring_buffer cap_ring_buf;
@@ -15,33 +22,27 @@ ring_buffer_t p_cap_ring_buf;
  */
 void DebugInit(void)
 {
+
+#if USB_DEBUG
+
+    app_usb_init();
+    ch_set_log_level(CH_LOG_INFO);
+    ch_set_log_mode(CH_LOG_USB);
+
+#else
     GPIOA_SetBits(GPIO_Pin_9);
     GPIOA_ModeCfg(GPIO_Pin_8, GPIO_ModeIN_PU);
     GPIOA_ModeCfg(GPIO_Pin_9, GPIO_ModeOut_PP_5mA);
     UART1_DefInit();
+#endif
 }
 
-/*********************************************************************
- * @fn      TMR1_CapInit
- *
- * @brief   外部信号捕捉功能初始化
- *
- * @param   cap     - select capture mode, refer to CapModeTypeDef
- *
- * @return  none
- */
-void TMR1_CaptureInit(CapModeTypeDef cap)
-{
-    R8_TMR1_CTRL_MOD |= RB_TMR_COUNT_EN | RB_TMR_MODE_IN | (cap << 6);
-}
+
 
 uint32_t ticksToMicroseconds(uint32_t ticks)
 {
     // Assuming Fsys = 60 MHz
     return (ticks * 16 + 8) / 1000; // Optimized rounding to avoid floating-point
-    /*
-    *  return (ticks / 60000); //Is the value calculated by the above formula the lighting effect?
-    */
 }
 
 /*********************************************************************
@@ -54,17 +55,36 @@ void processIRSignal(void)
     uint8_t i;
     static uint8_t bit_count = 0;
     static uint32_t command = 0;
-    uint32_t dat_buf[32];
-    PRINT("Processing IR Signal:\n");
+    CH_LOGI(TAG,"Processing IR Signal:\n");
 
-    rb_read_data_without_update_len(p_cap_ring_buf, dat_buf, 32);
-    PFIC_DisableIRQ(TMR1_IRQn);
-    rb_read_update_len(p_cap_ring_buf, 32);
-    PFIC_EnableIRQ(TMR1_IRQn);
-    for(i=0; i<32; ++i) 
+    for (i = 0; i < 32; i++)
     {
-        PRINT("%x | %d\n", ((dat_buf[i]>>25) & 0x01), dat_buf[i] & 0x1ffffff); // 26bit, 最高位表示 高电平还是低电平
+        uint32_t pulseWidth = CapBuf[i] & 0x1FFFFFF;
+        uint32_t pulseWidthUs = ticksToMicroseconds(pulseWidth);
+
+        if (pulseWidthUs > 1000 && pulseWidthUs < 1300)
+        {
+            command = (command << 1);
+            bit_count++;
+        }
+        else if (pulseWidthUs > 2100 && pulseWidthUs < 2300)
+        {
+            command = (command << 1) | 1;
+            bit_count++;
+        }
+        else
+        {
+            CH_LOGI(TAG,"? ");
+        }
+
+        if (bit_count == 32)
+        {
+            CH_LOGI(TAG,"Received Command: 0x%08lX\n", command);
+            bit_count = 0;
+        }
     }
+    TMR1_ITCfg(ENABLE, TMR1_2_IT_DMA_END);
+    CH_LOGI(TAG,"\n");
 }
 
 /*********************************************************************
@@ -77,40 +97,26 @@ int main(void)
     SetSysClock(CLK_SOURCE_PLL_60MHz);
     DebugInit();
 
-    PRINT("Starting IR Decoder @ChipID=%02X\n", R8_CHIP_ID);
-    p_cap_ring_buf = &cap_ring_buf;
-    rb_param_init(p_cap_ring_buf, cap_buf, sizeof(cap_buf)/sizeof(uint32_t));
+    CH_LOGI(TAG,"Starting IR Decoder @ChipID=%02X\n", R8_CHIP_ID);
 
     // Timer 1 capture setup
-#if LSE_32K_CRYSTAL_REMOVED
-    /* When using the timer capture function of PA10 or PA11, 
-    * the externally connected 32K crystal must be removed.
-    */
     PWR_UnitModCfg(DISABLE, UNIT_SYS_LSE);
-    GPIOA_ModeCfg(GPIO_Pin_10, GPIO_ModeIN_PU); //PA10 for capture
-#else 
-    GPIOPinRemap(ENABLE, RB_PIN_TMR1);
-    GPIOB_ModeCfg(GPIO_Pin_10, GPIO_ModeIN_PU); //PB10 for capture
-#endif
+    GPIOA_ModeCfg(GPIO_Pin_10, GPIO_ModeIN_PU);
 
-    R8_TMR1_CTRL_MOD = RB_TMR_ALL_CLEAR;
-    TMR1_CaptureInit(FallEdge_To_FallEdge); //rewrite function
-    /* Because only the lower 25 bits of R32_TMRx_FIFO are valid in capture mode, 
-    * R32_TMR1_CNT_END can only be set to a 25-bit value.
-    */
-    TMR1_CAPTimeoutCfg(30000000); //set the capture timeout,500ms
-    TMR1_ITCfg(ENABLE, TMR0_3_IT_FIFO_HF);
+    TMR1_CapInit(FallEdge_To_FallEdge);
+    TMR1_CAPTimeoutCfg(0xFFFFFFFF);
+    TMR1_DMACfg(ENABLE, (uint16_t)(uint32_t)&CapBuf[0], (uint16_t)(uint32_t)&CapBuf[32], Mode_LOOP);
+    TMR1_ITCfg(ENABLE, TMR1_2_IT_DMA_END);
     PFIC_EnableIRQ(TMR1_IRQn);
-    R8_TMR1_CTRL_MOD &= ~RB_TMR_ALL_CLEAR;
 
     while (1)
     {
-        if (p_cap_ring_buf->dat_len > 32)
+        if (capFlag)
         {
+            capFlag = 0;
             processIRSignal();
         }
-        __nop();
-    } 
+    }
 }
 
 /*********************************************************************
@@ -122,16 +128,10 @@ __INTERRUPT
 __HIGH_CODE
 void TMR1_IRQHandler(void) // TMR1 ��ʱ�ж�
 {
-    volatile uint8_t fifo_count;
-
-    if (TMR1_GetITFlag(TMR0_3_IT_FIFO_HF))
+    if (TMR1_GetITFlag(TMR1_2_IT_DMA_END))
     {
-        TMR1_ClearITFlag(TMR0_3_IT_FIFO_HF);    // ����жϱ�־
-        fifo_count = R8_TMR1_FIFO_COUNT;
-        while (fifo_count)
-        {
-            rb_write_byte(p_cap_ring_buf, R32_TMR1_FIFO);
-            --fifo_count;
-        }
+        TMR1_ITCfg(DISABLE, TMR1_2_IT_DMA_END); // ʹ�õ���DMA����+�жϣ�ע����ɺ�رմ��ж�ʹ�ܣ������һֱ�ϱ��жϡ�
+        TMR1_ClearITFlag(TMR1_2_IT_DMA_END);    // ����жϱ�־
+        capFlag = 1;
     }
 }

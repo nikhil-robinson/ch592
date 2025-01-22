@@ -5,7 +5,11 @@ SDK_PATH := ../../sdk
 APP_C_SRCS += \
   ./src/main.c\
   ./src/ring_buffer.c\
+  ./src/usb.c\
 
+API_C_SRCS := \
+	$(SDK_PATH)/api/log.c\
+	$(SDK_PATH)/api/log_buffer.c\
 
 
 SDK_STDPERIPHDRIVER_C_SRCS += \
@@ -17,6 +21,7 @@ SDK_STDPERIPHDRIVER_C_SRCS += \
   $(SDK_PATH)/StdPeriphDriver/CH59x_timer2.c \
   $(SDK_PATH)/StdPeriphDriver/CH59x_timer3.c \
   $(SDK_PATH)/StdPeriphDriver/CH59x_uart1.c \
+  $(SDK_PATH)/StdPeriphDriver/CH59x_usbdev.c \
 
 SDK_RVMSIS_C_SRCS += \
   $(SDK_PATH)/RVMSIS/core_riscv.c
@@ -29,7 +34,8 @@ SDK_STARTUP_S_UPPER_SRCS += \
 C_SRCS := \
   $(APP_C_SRCS) \
   $(SDK_STDPERIPHDRIVER_C_SRCS) \
-  $(SDK_RVMSIS_C_SRCS)
+  $(SDK_RVMSIS_C_SRCS)\
+  $(API_C_SRCS)\
 
 S_UPPER_SRCS := \
   $(SDK_STARTUP_S_UPPER_SRCS)
@@ -37,6 +43,7 @@ S_UPPER_SRCS := \
 OBJS := \
   $(patsubst ./src/%.c,obj/src/%.o,$(APP_C_SRCS)) \
   $(patsubst $(SDK_PATH)/%.c,obj/sdk/%.o,$(SDK_STDPERIPHDRIVER_C_SRCS)) \
+  $(patsubst $(SDK_PATH)/%.c,obj/sdk/%.o,$(API_C_SRCS)) \
   $(patsubst $(SDK_PATH)/%.c,obj/sdk/%.o,$(SDK_RVMSIS_C_SRCS)) \
   $(patsubst $(SDK_PATH)/%.S,obj/sdk/%.o,$(SDK_STARTUP_S_UPPER_SRCS))
 
@@ -120,8 +127,10 @@ obj/src/%.o: ./src/%.c
 	    $(CFLAGS_COMMON) \
 	    -DDEBUG=1 \
 	    -I"src/include" \
+		-I"src/" \
 	    -I"$(SDK_PATH)/StdPeriphDriver/inc" \
 	    -I"$(SDK_PATH)/RVMSIS" \
+		-I"$(SDK_PATH)/api/inc" \
 	    -std=gnu99 \
 	    -MMD \
 	    -MP \
@@ -136,8 +145,10 @@ obj/sdk/%.o: $(SDK_PATH)/%.c
 	    $(CFLAGS_COMMON) \
 	    -DDEBUG=1 \
 	    -I"src/include" \
+		-I"src/" \
 	    -I"$(SDK_PATH)/StdPeriphDriver/inc" \
 	    -I"$(SDK_PATH)/RVMSIS" \
+		-I"$(SDK_PATH)/api/inc" \
 	    -std=gnu99 \
 	    -MMD \
 	    -MP \
