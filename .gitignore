@@ -4,3 +4,4 @@ obj/
 *.lst
 *.map
 examples/BLE/BLE_BROADCATSER/main.bin
+.vscode
