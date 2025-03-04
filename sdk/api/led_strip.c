@@ -1,8 +1,9 @@
 #include "CH59x_common.h"
 #include "led_strip.h"
+#include "config.h"
 
 
-#define Pixel_NUM        (1)
+#define Pixel_NUM        (RGB_NUMS)
 
 /** spi mode
  * When you using spi mode, you should make sure your spi work at 6M clock
