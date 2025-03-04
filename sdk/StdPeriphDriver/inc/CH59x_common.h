@@ -46,7 +46,7 @@
 #endif
 
 /**
- * @brief  系统主频时钟（Hz）
+ * @brief  系统锟斤拷频时锟接ｏ拷Hz锟斤拷
  */
 #ifndef	 FREQ_SYS
 #define  FREQ_SYS		60000000
@@ -57,7 +57,7 @@
 #endif
 
 /**
- * @brief  32K时钟（Hz）
+ * @brief  32K时锟接ｏ拷Hz锟斤拷
  */
 #ifdef CLK_OSC32K
 #if ( CLK_OSC32K == 1 )
@@ -87,7 +87,7 @@
 #include "CH59x_usbdev.h"
 #include "CH59x_usbhost.h"
 #include "ISP592.h"
-
+#include "ch_log.h"
 
 #define DelayMs(x)      mDelaymS(x)
 #define DelayUs(x)      mDelayuS(x)

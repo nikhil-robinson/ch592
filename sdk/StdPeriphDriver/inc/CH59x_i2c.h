@@ -173,6 +173,8 @@ void     I2C_ClearFlag(uint32_t I2C_FLAG);
 ITStatus I2C_GetITStatus(uint32_t I2C_IT);
 void     I2C_ClearITPendingBit(uint32_t I2C_IT);
 
+void I2C_DeInit();
+
 #ifdef __cplusplus
 }
 #endif

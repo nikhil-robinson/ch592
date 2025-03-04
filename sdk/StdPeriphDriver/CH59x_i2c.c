@@ -670,3 +670,12 @@ void I2C_ClearITPendingBit(uint32_t I2C_IT)
     flagpos = I2C_IT & FLAG_Mask;
     R16_I2C_STAR1 = (uint16_t)~flagpos;
 }
+
+
+void I2C_DeInit()
+{
+    I2C_SoftwareResetCmd(ENABLE);
+    I2C_SoftwareResetCmd(DISABLE);
+
+    I2C_Cmd(DISABLE);
+}
